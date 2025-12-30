@@ -1,25 +1,86 @@
-
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>House Viewing Butler - 看房管家</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script type="importmap">
-{
-  "imports": {
-    "recharts": "https://esm.sh/recharts@^3.6.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "@google/genai": "https://esm.sh/@google/genai@^1.34.0"
-  }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>看房管家</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#3b82f6">
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont;padding:15px;background:#f1f5f9;}
+input,select,button{width:100%;padding:8px;margin:4px 0;border-radius:6px;border:1px solid #ccc;}
+.card{background:#fff;border-radius:10px;padding:10px;margin-top:10px;box-shadow:0 0 5px rgba(0,0,0,.1);}
+button{background:#3b82f6;color:white;font-weight:bold}
+</style>
+</head>
+<body>
+
+<h2>🏠 看房管家</h2>
+
+<div class="card">
+  <input id="name" placeholder="建案名稱">
+  <input id="area" placeholder="區域">
+  <input id="type" placeholder="房型">
+  <input id="price" type="number" placeholder="總金額(萬)">
+  <input id="households" type="number" placeholder="總戶數">
+  <input id="floor" placeholder="樓層">
+  <input id="deed" type="number" placeholder="權狀坪數">
+  <input id="indoor" type="number" placeholder="室內坪數">
+  <input id="balcony" type="number" placeholder="陽台坪數">
+
+  <select id="car">
+    <option>無</option><option>平面</option><option>機械</option>
+  </select>
+
+  <select id="bike">
+    <option>無</option><option>戶外</option><option>室內</option>
+  </select>
+
+  <button onclick="save()">新增建案</button>
+</div>
+
+<div id="list"></div>
+
+<script>
+let data = JSON.parse(localStorage.getItem("houses")||"[]");
+
+function save(){
+  let h={
+    name:name.value,area:area.value,type:type.value,
+    price:+price.value,households:households.value,floor:floor.value,
+    deed:+deed.value,indoor:+indoor.value,balcony:+balcony.value,
+    car:car.value,bike:bike.value
+  };
+  data.push(h);
+  localStorage.setItem("houses",JSON.stringify(data));
+  render();
+}
+
+function del(i){
+  data.splice(i,1);
+  localStorage.setItem("houses",JSON.stringify(data));
+  render();
+}
+
+function render(){
+  list.innerHTML="";
+  data.forEach((h,i)=>{
+    let pub = ((h.deed-h.indoor-h.balcony)/h.deed*100).toFixed(1);
+    let unit = (h.price/h.indoor).toFixed(1);
+    list.innerHTML += `
+    <div class="card">
+      <b>${h.name}</b> ${h.area} ${h.type}<br>
+      總價:${h.price}萬 | 室內單價:${unit}萬<br>
+      公設比:${pub}% | 車位:${h.car} | 機車:${h.bike}<br>
+      <button onclick="del(${i})">刪除</button>
+    </div>`;
+  });
+}
+render();
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('service-worker.js');
 }
 </script>
-</head>
-<body class="bg-gray-50 text-gray-900">
-  <div id="root"></div>
 </body>
 </html>
