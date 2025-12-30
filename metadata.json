@@ -1,0 +1,7 @@
+{
+  "name": "House Viewing Butler (看房管家)",
+  "description": "A comprehensive real estate assistant to track house viewings, calculate unit prices/public ratios, and get AI-powered evaluations of property deals.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
